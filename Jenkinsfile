@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/ElyesBelgouthi/TP-Terraform-Ansible.git'
+                git branch: 'ansible', url: 'https://github.com/ElyesBelgouthi/TP-Terraform-Ansible.git'
             }
         }
 
@@ -42,6 +42,14 @@ pipeline {
                 }
             }
         }
+
+        stage('Deploy with Ansible') {
+            steps {
+                dir('ansible') {
+                    sh 'ansible-playbook -i inventory.ini playbook.yml'
+                }
+            }
+        }
     }
 
     post {
@@ -49,10 +57,10 @@ pipeline {
             cleanWs()
         }
         success {
-            echo 'Terraform apply was successful!'
+            echo 'Deployment was successful!'
         }
         failure {
-            echo 'Terraform apply failed!'
+            echo 'Deployment failed!'
         }
     }
 }
