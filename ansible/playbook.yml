@@ -1,0 +1,19 @@
+---
+- name: Deploy Docker image on EC2 instance
+  hosts: web
+  become: true
+
+  tasks:
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+      tags: docker
+
+    - name: Run Docker container
+      docker_container:
+        name: express-demo-app
+        image: elyesbelgouthi/express-demo-app:latest
+        state: started
+        restart_policy: always
+      tags: docker
