@@ -43,6 +43,17 @@ pipeline {
             }
         }
 
+        stage('Capture Instance IP') {
+            steps {
+                script {
+                    dir('terraform') {
+                        def instanceIp = sh(script: "terraform output -raw instance_public_ip", returnStdout: true).trim()
+                        writeFile file: 'ansible/inventory.ini', text: "[web]\n${instanceIp}\nansible_ssh_private_key_file=/path/to/your/private-key.pem ansible_user=ec2-user\n"
+                    }
+                }
+            }
+        }
+
         stage('Deploy with Ansible') {
             steps {
                 dir('ansible') {
