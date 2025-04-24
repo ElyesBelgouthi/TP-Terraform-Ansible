@@ -43,17 +43,6 @@ pipeline {
             }
         }
 
-        stage('Capture Instance IP') {
-            steps {
-                script {
-                    dir('terraform') {
-                        def instanceIp = sh(script: "terraform output -raw instance_public_ip", returnStdout: true).trim()
-                        writeFile file: 'ansible/inventory.ini', text: "[web]\n${instanceIp}\n"
-                    }
-                }
-            }
-        }
-
         stage('Deploy with Ansible') {
             steps {
                 dir('ansible') {
