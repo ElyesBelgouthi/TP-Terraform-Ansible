@@ -1,41 +1,22 @@
-provider "aws" {
-  region = "eu-central-1"
+locals {
+  vpc_id = "vpc-00625155b8c03e99c"
+  ssh_user = "ec2-user"
+  key_name = "DevOps"
+  private_key_path = "./DevOps.pem"
+  existing_security_group_id = "sg-0c464bdf396e675fa"
 }
 
-resource "aws_security_group" "allow_ssh" {
-  name        = "allow_ssh"
-  description = "Allow SSH traffic"
 
-  ingress {
-    description = "Allow SSH"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  
-  }
-
-  ingress {
-    description = "Allow HTTP"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+provider "aws" {
+  region = "eu-central-1"
 }
 
 resource "aws_instance" "web" {
   ami             = "ami-0d8d11821a1c1678b"
   instance_type   = "t2.micro"
   associate_public_ip_address = true
-  security_groups = [aws_security_group.allow_ssh.name]
-  key_name = "DevOps"
+  vpc_security_group_ids      = [local.existing_security_group_id]
+  key_name = local.key_name
 
   tags = {
     Name = "DevOps-Instance"
@@ -48,9 +29,9 @@ resource "aws_instance" "web" {
 
     connection {
       type = "ssh"
-      user = "ec2-user"
-      host = aws_instance.web.public_ip
-      private_key = file("./DevOps.pem")
+      user = local.ssh_user
+      host = self.public_ip
+      private_key = file(local.private_key_path)
     }
   }
 }
