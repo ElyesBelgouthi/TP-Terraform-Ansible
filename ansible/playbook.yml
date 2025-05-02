@@ -1,6 +1,6 @@
 ---
 - name: Deploy Docker image on EC2 instance
-  hosts: web
+  hosts: all
   become: true
 
   tasks:

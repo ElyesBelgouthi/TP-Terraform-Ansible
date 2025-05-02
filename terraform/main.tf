@@ -11,7 +11,15 @@ resource "aws_security_group" "allow_ssh" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  # Open to all IPs; restrict as necessary for security
+    cidr_blocks = ["0.0.0.0/0"]  
+  }
+
+  ingress {
+    description = "Allow HTTP"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  
   }
 
   egress {
@@ -25,10 +33,23 @@ resource "aws_security_group" "allow_ssh" {
 resource "aws_instance" "web" {
   ami             = "ami-0d8d11821a1c1678b"
   instance_type   = "t2.micro"
+  associate_public_ip_address = true
   security_groups = [aws_security_group.allow_ssh.name]
+  key_name = "DevOps"
 
   tags = {
     Name = "DevOps-Instance"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+    "while ! nc -z localhost 22; do sleep 5; done"
+    ]
+
+    connection {
+      type = "ssh"
+      host = aws_instance.web.public_ip
+    }
   }
 }
 
