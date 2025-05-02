@@ -48,7 +48,7 @@ pipeline {
             steps {
                 script {
                     def instanceIp = sh(script: "terraform output -raw instance_public_ip", returnStdout: true).trim()
-                    writeFile file: 'ansible/inventory.ini', text: "[all]\n${instanceIp} ansible_ssh_user=ec2-user ansible_ssh_private_key_file=${SSH_CREDENTIAL_ID}\n"
+                    writeFile file: 'ansible/inventory.ini', text: "[all]\n${instanceIp} ansible_ssh_user=ec2-user ansible_ssh_private_key_file=./terraform/DevOps.pem\n"
                 }
             }
         }
