@@ -56,11 +56,7 @@ pipeline {
         stage('Deploy with Ansible') {
             steps {
                 dir('ansible') {
-                    script {
-                      withCredentials([sshUserPrivateKey(credentialsId: SSH_CREDENTIAL_ID, keyFileVariable: 'KEY_FILE')]) {
-                          sh 'ansible-playbook -i inventory.ini playbook.yml --private-key=$KEY_FILE'
-                      }
-                    }
+                    sh 'ansible-playbook -i inventory.ini playbook.yml --private-key=../terraform/DevOps.pem'
                 }
             }
         }
