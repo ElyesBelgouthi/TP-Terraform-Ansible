@@ -24,6 +24,7 @@ resource "aws_instance" "web" {
 
   provisioner "remote-exec" {
     inline = [
+    "sudo yum install -y nc || sudo apt-get install -y netcat",
     "while ! nc -z localhost 22; do sleep 5; done"
     ]
 
