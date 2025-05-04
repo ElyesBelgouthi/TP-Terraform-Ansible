@@ -43,17 +43,6 @@ pipeline {
             }
         }
 
-        stage('Update Inventory') {
-            steps {
-                script {
-                    def instanceIp = sh(script: "terraform output -raw instance_public_ip", returnStdout: true).trim()
-                    writeFile file: 'ansible/inventory.ini', 
-                        text: """[all]
-                        ${instanceIp} ansible_user=ec2-user ansible_private_key_file=../terraform/DevOps.pem
-                        """
-                }
-            }
-        }
 
         stage('Deploy with Ansible') {
             steps {
