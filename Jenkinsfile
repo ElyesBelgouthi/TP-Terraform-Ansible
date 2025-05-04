@@ -4,7 +4,6 @@ pipeline {
     environment {
         AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
         AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
-        SSH_CREDENTIALS_ID = credentials('SSH_PRIVATE_KEY')
     }
 
     stages {
@@ -48,7 +47,10 @@ pipeline {
             steps {
                 script {
                     def instanceIp = sh(script: "terraform output -raw instance_public_ip", returnStdout: true).trim()
-                    writeFile file: 'ansible/inventory.ini', text: "[all]\n${instanceIp} ansible_ssh_user=ec2-user ansible_ssh_private_key_file=./terraform/DevOps.pem\n"
+                    writeFile file: 'ansible/inventory.ini', 
+                        text: """[all]
+                        ${instanceIp} ansible_user=ec2-user ansible_private_key_file=../terraform/DevOps.pem
+                        """
                 }
             }
         }
