@@ -31,29 +31,33 @@ pipeline {
                 }
             }
         }
-
-        stage('Terraform Apply') {
+        stage('Terraform Apply and Capture Output') {
             steps {
                 withCredentials([file(credentialsId: 'AWS_SSH_KEY', variable: 'SSH_KEY_FILE')]) {
                     dir('terraform') {
                         sh 'terraform apply -auto-approve -var="private_key_path=$SSH_KEY_FILE"'
+                        script {
+                            ENVIRONMENT_IP = sh(script: "terraform output -raw instance_public_ip", returnStdout: true).trim()
+                            echo "Captured IP Address: $ENVIRONMENT_IP"
+                        }
                     }
                 }
-            }
+            }      
         }
+
         stage('Create Ansible Inventory') {
             steps {
                 script {
-                    writeFile file: 'ansible/inventory.ini', text: "[all]\n${env.ENVIRONMENT_IP} ansible_user=ec2-user ansible_ssh_extra_args='-o IdentitiesOnly=yes' ansible_ssh_common_args='-o StrictHostKeyChecking=no -i \$SSH_KEY_FILE'"
+                    writeFile file: 'ansible/inventory.ini', text: "[all]\n${ENVIRONMENT_IP} ansible_user=ec2-user ansible_ssh_extra_args='-o IdentitiesOnly=yes' ansible_ssh_common_args='-o StrictHostKeyChecking=no -i ${SSH_KEY_FILE}'"
                 }
             }
-        }
+        }       
 
         stage('Debug Inventory') {
             steps {
                 sh 'cat ansible/inventory.ini'
             }
-        }       
+        }    
 
         stage('Deploy with Ansible') {
             steps {
