@@ -47,7 +47,7 @@ pipeline {
         stage('Deploy with Ansible') {
             steps {
                 dir('ansible') {
-                    sh 'ansible-playbook -i inventory.ini playbook.yml --private-key=../terraform/DevOps.pem'
+                    sh 'ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.ini playbook.yml --private-key=../terraform/DevOps.pem'
                 }
             }
         }
