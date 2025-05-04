@@ -12,14 +12,7 @@ pipeline {
                 git branch: 'ansible', url: 'https://github.com/ElyesBelgouthi/TP-Terraform-Ansible.git'
             }
         }
-        
-        stage('Setup SSH Key') {
-            steps {
-                withCredentials([file(credentialsId: 'AWS_SSH_KEY', variable: 'SSH_KEY_FILE')]) {
-                    sh 'chmod 600 $SSH_KEY_FILE'
-                }
-            }
-        }
+
 
         stage('Terraform Init') {
             steps {
