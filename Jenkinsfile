@@ -46,7 +46,7 @@ pipeline {
             steps {
                 withCredentials([file(credentialsId: 'AWS_SSH_KEY', variable: 'SSH_KEY_FILE')]) {
                     sh '''
-                    sh 'chmod 600 $SSH_KEY_FILE'
+                    chmod 600 $SSH_KEY_FILE
                     echo "SSH Key Path: $SSH_KEY_FILE"
                     ls -l $SSH_KEY_FILE
                     '''
@@ -60,7 +60,7 @@ pipeline {
                     dir('ansible') {
                         sh 'chmod 600 $SSH_KEY_FILE'
                         sh '''
-                        ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.ini playbook.yml --private-key=$SSH_KEY_FILE
+                        ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.ini playbook.yml --private-key=$SSH_KEY_FILE -vvv
                         '''
                     }
                 }
