@@ -42,6 +42,17 @@ pipeline {
             }
         }
 
+        stage('Verify SSH Key') {
+            steps {
+                withCredentials([file(credentialsId: 'AWS_SSH_KEY', variable: 'SSH_KEY_FILE')]) {
+                    sh '''
+                    echo "SSH Key Path: $SSH_KEY_FILE"
+                    ls -l $SSH_KEY_FILE
+                    '''
+                }
+            }
+        }
+
         stage('Deploy with Ansible') {
             steps{
                 withCredentials([file(credentialsId: 'AWS_SSH_KEY', variable: 'SSH_KEY_FILE')]) {
