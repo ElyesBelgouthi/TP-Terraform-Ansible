@@ -47,7 +47,9 @@ pipeline {
 
         stage('Create Ansible Inventory') {
             steps {
-                writeFile file: 'ansible/inventory.ini', text: "[all]\n${ENVIRONMENT_IP} ansible_user=ec2-user ansible_ssh_extra_args='-o IdentitiesOnly=yes' ansible_ssh_common_args='-o StrictHostKeyChecking=no -i $SSH_KEY_FILE'"
+                script {
+                    writeFile file: 'ansible/inventory.ini', text: "[all]\n${env.ENVIRONMENT_IP} ansible_user=ec2-user ansible_ssh_extra_args='-o IdentitiesOnly=yes' ansible_ssh_common_args='-o StrictHostKeyChecking=no -i \$SSH_KEY_FILE'"
+                }
             }
         }
 
