@@ -58,6 +58,7 @@ pipeline {
                 withCredentials([file(credentialsId: 'AWS_SSH_KEY', variable: 'SSH_KEY_FILE')]) {
                     dir('ansible') {
                         sh '''
+                        chmod 600 $SSH_KEY_FILE
                         ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.ini playbook.yml --private-key="${SSH_KEY_FILE}"
                         '''
                     }
