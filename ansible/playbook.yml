@@ -5,9 +5,16 @@
 
   tasks:
     - name: Install Docker
-      apt:
-        name: docker.io
+      package:
+        name: docker
         state: present
+      tags: docker
+
+    - name: Start and enable Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
       tags: docker
 
     - name: Run Docker container
