@@ -37,18 +37,7 @@ pipeline {
                 withCredentials([file(credentialsId: 'AWS_SSH_KEY', variable: 'SSH_KEY_FILE')]) {
                     dir('terraform') {
                         sh 'terraform apply -auto-approve -var="private_key_path=$SSH_KEY_FILE"'
-                        script {
-                            ENVIRONMENT_IP = sh(script: "terraform output -raw instance_public_ip", returnStdout: true).trim()
-                        }
                     }
-                }
-            }
-        }
-
-        stage('Create Ansible Inventory') {
-            steps {
-                script {
-                    writeFile file: 'ansible/inventory.ini', text: "[all]\n${env.ENVIRONMENT_IP} ansible_user=ec2-user ansible_ssh_extra_args='-o IdentitiesOnly=yes' ansible_ssh_common_args='-o StrictHostKeyChecking=no -i \$SSH_KEY_FILE'"
                 }
             }
         }
@@ -58,15 +47,15 @@ pipeline {
                 withCredentials([file(credentialsId: 'AWS_SSH_KEY', variable: 'SSH_KEY_FILE')]) {
                     dir('ansible') {
                         sh '''
-                        chmod 600 $SSH_KEY_FILE
-                        ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.ini playbook.yml --private-key="${SSH_KEY_FILE}"
+                        echo "Using SSH Key at: '${SSH_KEY_FILE}'"
+                        chmod 600 "${SSH_KEY_FILE}"
+                        ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.ini playbook.yml --private-key="${SSH_KEY_FILE}" -vvv
                         '''
                     }
                 }
             }
         }
 
-    }
 
     post {
         always {
