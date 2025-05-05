@@ -31,6 +31,7 @@ pipeline {
                 }
             }
         }
+        
         stage('Terraform Apply and Capture Output') {
             steps {
                 withCredentials([file(credentialsId: 'AWS_SSH_KEY', variable: 'SSH_KEY_FILE')]) {

@@ -23,4 +23,6 @@
         image: elyesbelgouthi/express-demo-app:latest
         state: started
         restart_policy: always
+        published_ports:
+          - "80:3000"
       tags: docker
